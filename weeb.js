@@ -57,14 +57,14 @@ function getAuth() {
 
 function getSong() {
   return new Promise(function(resolve, reject) {
-    var song = document.getElementsByClassName('songTitle');
+    var song = document.getElementsByClassName('songTitle')[0].innerHTML;
     console.log(song);
     resolve(song);
   });
 }
 
 getArtist = function() {
-  var artist = document.getElementsByClassName('artistSummary');
+  var artist = document.getElementsByClassName('artistSummary')[0].innerHTML;
   console.log(artist);
   return artist;
 }
