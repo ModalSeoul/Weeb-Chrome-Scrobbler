@@ -7,10 +7,14 @@
  * If you ain't first, you're Last(.fm).
  *
  * Also this only works on Pandora right now, sorry.
+ *
+ * DISCLAIMER:
+ *  This code is awful - Vanilla JS disgusts me. I'll refactor it
+ *  upon releasing the alpha site.
  */
 
 var USER = 'testacc';
-var PASS = 'dddddddddd';
+var PASS = 'possword';
 var ENV = 'dev';
 var API;
 switch (ENV) {
@@ -18,76 +22,71 @@ switch (ENV) {
   API = 'http://localhost:8000/api/';
   break;
   case 'live':
-  API = 'https://no_domain_yet.com/api/'
+  API = 'https://no_domain_yet.com/api/';
 }
 
-var request = new XMLHttpRequest();
 var lastSong;
+var isAuth = false;
 var Auth = {
     'token': '',
     'drfHeader': ''
 };
 
-
 function isAuthenticated() {
-  if (Auth['token'].length != 0) {
+  if (isAuth) {
     return true;
-  }  else {
+  } else {
     return false;
   }
 }
 
-function setContent() {
-  request.setRequestHeader('Content-Type',
-    'application/x-www-form-urlencoded; charset=UTF-8');
-}
-
 function getAuth() {
-  request.open('POST', `${API}api-token-auth/`, true);
-  setContent();
-  request.send(`username=${USER}&password=${PASS}`);
+  chrome.runtime.sendMessage({
+      method: 'POST',
+      action: 'xhttp',
+      url: `${API}api-token-auth/`,
+      data: `username=${USER}&password=${PASS}`,
+      drf: 'null'
+  },function(responseText) {
+      alert(responseText);
+      Auth.token = JSON.parse(responseText).token;
+      Auth.drfHeader = `Token ${Auth.token}`;
+  });
 
-  return request.onreadystatechange = function() {
-    if (request.readyState == 4 && request.status == 200) {
-      Auth['token'] = JSON.parse(request.responseText)['token'];
-      Auth['drfHeader'] = `Authorization: Token ${Auth['token']}`;
-      return true;
-    }
-  }
 }
 
 function getSong() {
   return new Promise(function(resolve, reject) {
-    var song = document.getElementsByClassName('songTitle')[0].innerHTML;
-      resolve(song);
+    var song = document.getElementsByClassName('songTitle');
+    console.log(song);
+    resolve(song);
   });
 }
 
 getArtist = function() {
-  var artist = document.getElementsByClassName('artistSummary')[0].innerHTML;
+  var artist = document.getElementsByClassName('artistSummary');
+  console.log(artist);
   return artist;
 }
 
 function scrobble(song, artist) {
-  if (isAuthenticated) {
-    chrome.runtime.sendMessage({
-        method: 'POST',
-        action: 'xhttp',
-        url: `${API}scrobbles/`,
-        data: `song=${song}&artist=${artist}`
-    }, function(responseText) {
-        alert(responseText);
-    });
-  } else {
-    console.log('Reauth');
-  }
+  console.log('BOTH', song, artist);
+  chrome.runtime.sendMessage({
+      method: 'POST',
+      action: 'xhttp',
+      url: `${API}scrobbles/`,
+      data: `song=${song}&artist=${artist}`,
+      drf: Auth.drfHeader
+  }, function(responseText) {
+      // alert(responseText);
+  });
 }
 
 function main() {
+  getAuth();
   setInterval(() => {
     var newArtist = getArtist();
     getSong().then((r) => {
-      console.log(lastSong, r);
       if (lastSong != r) {
         lastSong = r;
         scrobble(r, newArtist);
