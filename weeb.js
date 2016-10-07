@@ -48,7 +48,6 @@ function getAuth() {
       data: `username=${USER}&password=${PASS}`,
       drf: 'null'
   },function(responseText) {
-      alert(responseText);
       Auth.token = JSON.parse(responseText).token;
       Auth.drfHeader = `Token ${Auth.token}`;
   });
@@ -58,7 +57,6 @@ function getAuth() {
 function getSong() {
   return new Promise(function(resolve, reject) {
     var song = document.getElementsByClassName('songTitle')[0].innerHTML;
-    console.log(song);
     resolve(song);
   });
 }
@@ -69,29 +67,40 @@ getArtist = function() {
   return artist;
 }
 
-function scrobble(song, artist) {
-  console.log('BOTH', song, artist);
+function getAlbum() {
+  return new Promise(function(resolve, reject) {
+    var album = document.getElementsByClassName('albumTitle')[0].innerText;
+    resolve(album);
+  });
+}
+
+function scrobble(song, artist, album) {
   chrome.runtime.sendMessage({
       method: 'POST',
       action: 'xhttp',
       url: `${API}scrobbles/`,
-      data: `song=${song}&artist=${artist}`,
+      data: `song=${song}&artist=${artist}&album=${album}`,
       drf: Auth.drfHeader
   }, function(responseText) {
-      // alert(responseText);
+      console.log(`Scrobbled ${song} by ${artist} on the album ${album}`);
+  });
+}
+
+function loop() {
+  var newArtist = getArtist();
+  getSong().then((_song) => {
+    getAlbum().then((_album) => {
+        lastSong = _song;
+        scrobble(_song, newArtist, _album);
+      }
+    });
   });
 }
 
 function main() {
   getAuth();
   setInterval(() => {
-    var newArtist = getArtist();
-    getSong().then((r) => {
-      if (lastSong != r) {
-        lastSong = r;
-        scrobble(r, newArtist);
-      }
-    });
+    loop();
   }, 5000);
 }
 
