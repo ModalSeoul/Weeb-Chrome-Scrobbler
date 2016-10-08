@@ -55,24 +55,26 @@ function getAuth() {
 }
 
 function getSong() {
-  return new Promise(function(resolve, reject) {
+  return new Promise((resolve, reject) => {
     var song = document.getElementsByClassName('songTitle')[0].innerHTML;
     resolve(song);
   });
 }
 
-getArtist = function() {
-  var artist = document.getElementsByClassName('artistSummary')[0].innerHTML;
-  console.log(artist);
-  return artist;
-}
-
 function getAlbum() {
-  return new Promise(function(resolve, reject) {
+  return new Promise((resolve, reject) => {
     var album = document.getElementsByClassName('albumTitle')[0].innerText;
     resolve(album);
   });
 }
+
+function getArtist() {
+  return new Promise((resolve, reject) => {
+    var artist = document.getElementsByClassName('artistSummary')[0].innerHTML;
+    resolve(artist);
+  });
+}
+
 
 function scrobble(song, artist, album) {
   chrome.runtime.sendMessage({
@@ -86,12 +88,15 @@ function scrobble(song, artist, album) {
   });
 }
 
-function loop() {
-  var newArtist = getArtist();
+function pandoraLoop() {
   getSong().then((_song) => {
     getAlbum().then((_album) => {
-        lastSong = _song;
-        scrobble(_song, newArtist, _album);
+      getArtist().then((_artist) => {
+        if (lastSong != _song) {
+            lastSong = _song;
+            scrobble(_song, newArtist, _album);
+          }
+        });
       }
     });
   });
@@ -100,7 +105,7 @@ function loop() {
 function main() {
   getAuth();
   setInterval(() => {
-    loop();
+    pandoraLoop();
   }, 5000);
 }
 
