@@ -93,11 +93,10 @@ function pandoraLoop() {
     getAlbum().then((_album) => {
       getArtist().then((_artist) => {
         if (lastSong != _song) {
-            lastSong = _song;
-            scrobble(_song, newArtist, _album);
-          }
-        });
-      }
+          lastSong = _song;
+          scrobble(_song, newArtist, _album);
+        }
+      });
     });
   });
 }
