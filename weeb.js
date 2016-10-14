@@ -13,7 +13,7 @@
  *  upon releasing the alpha site.
  */
 
-var USER = 'youruserhere';
+var USER = 'Modal';
 var PASS = 'yourpassword';
 var ENV = 'live';
 var API;
@@ -25,12 +25,29 @@ switch (ENV) {
   API = 'https://modal.moe/api/';
 }
 
+var isPandora;
+var isBandcamp;
+
 var lastSong;
 var isAuth = false;
 var Auth = {
     'token': '',
     'drfHeader': ''
 };
+
+if (window.location.href.indexOf('pandora') > -1) {
+  isPandora = true;
+} else {
+  isPandora = false;
+}
+
+if (window.location.href.indexOf('bandcamp') > -1) {
+  isBandcamp = true;
+} else {
+  isBandcamp = false;
+}
+
+console.log(isBandcamp, isPandora);
 
 function isAuthenticated() {
   if (isAuth) {
@@ -101,10 +118,37 @@ function pandoraLoop() {
   });
 }
 
+function getBandCampAlbum() {
+  return new Promise((resolve, reject) => {
+    var album = document.getElementsByClassName('trackTitle')[0].innerHTML;
+    resolve(album.trim());
+  });
+}
+
+function getBandCampSong() {
+  return new Promise((resolve, reject) => {
+    var song = document.getElementsByClassName('title')[0].innerHTML;
+    resolve(song.trim());
+  });
+}
+
+function bandCampLoop() {
+  getBandCampAlbum().then((_album) => {
+    getBandCampSong().then((_song) => {
+      console.log(_song, _album);
+    });
+  });
+}
+
 function main() {
   getAuth();
   setInterval(() => {
-    pandoraLoop();
+    if (isPandora) {
+      pandoraLoop();
+    }
+    if (isBandcamp) {
+      bandCampLoop();
+    }
   }, 10000);
 }
 

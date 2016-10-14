@@ -7,7 +7,7 @@
   "content_scripts": [
     {
       "js": ["weeb.js"],
-      "matches": ["*://*.pandora.com/*"]
+      "matches": ["*://*.pandora.com/*", "*://*.bandcamp.com/*"]
     }],
   "background": {
     "scripts": ["background.js"],
