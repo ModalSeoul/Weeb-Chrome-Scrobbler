@@ -13,16 +13,16 @@
  *  upon releasing the alpha site.
  */
 
-var USER = 'testacc';
-var PASS = 'possword';
-var ENV = 'dev';
+var USER = 'youruserhere';
+var PASS = 'yourpassword';
+var ENV = 'live';
 var API;
 switch (ENV) {
   case 'dev':
   API = 'http://localhost:8000/api/';
   break;
   case 'live':
-  API = 'https://no_domain_yet.com/api/';
+  API = 'https://modal.moe/api/';
 }
 
 var lastSong;
