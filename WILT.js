@@ -132,10 +132,21 @@ function getBandCampSong() {
   });
 }
 
+function getBandCampArtist() {
+  return new Promise((resolve, reject) => {
+    resolve(document.getElementById('name-section').getElementsByTagName('a')[0].innerHTML);
+  });
+}
+
 function bandCampLoop() {
   getBandCampAlbum().then((_album) => {
     getBandCampSong().then((_song) => {
-      console.log(_song, _album);
+      getBandCampArtist().then((_artist) => {
+        if (lastSong != _song) {
+          lastSong = _song;
+          scrobble(_song, _artist, _album);
+        }
+      });
     });
   });
 }

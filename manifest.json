@@ -2,11 +2,11 @@
   "manifest_version": 2,
 
   "name": "Scrobbleman2000",
-  "description": "Scrobbles music to some shitty lastfm rip off",
-  "version": "1.0",
+  "description": "Scrobbles music to What I Listen To",
+  "version": "1.1",
   "content_scripts": [
     {
-      "js": ["weeb.js"],
+      "js": ["WILT.js"],
       "matches": ["*://*.pandora.com/*", "*://*.bandcamp.com/*"]
     }],
   "background": {
