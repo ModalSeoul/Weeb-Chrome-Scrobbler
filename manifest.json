@@ -7,7 +7,11 @@
   "content_scripts": [
     {
       "js": ["WILT.js"],
-      "matches": ["*://*.pandora.com/*", "*://*.bandcamp.com/*"]
+      "matches": [
+        "*://*.pandora.com/*",
+        "*://*.bandcamp.com/*",
+        "*://play.google.com/*"
+      ]
     }],
   "background": {
     "scripts": ["background.js"],

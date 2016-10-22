@@ -14,9 +14,10 @@
  */
 
 var USER = 'Modal';
-var PASS = 'yourpassword';
+var PASS = 'alpha';
 var ENV = 'live';
 var API;
+
 switch (ENV) {
   case 'dev':
   API = 'http://localhost:8000/api/';
@@ -27,6 +28,7 @@ switch (ENV) {
 
 var isPandora;
 var isBandcamp;
+var isGoogle;
 
 var lastSong;
 var isAuth = false;
@@ -41,13 +43,28 @@ if (window.location.href.indexOf('pandora') > -1) {
   isPandora = false;
 }
 
+if (window.location.href.indexOf('play.google') > -1) {
+  isGoogle = true;
+} else {
+  isGoogle = false;
+}
+
 if (window.location.href.indexOf('bandcamp') > -1) {
   isBandcamp = true;
 } else {
   isBandcamp = false;
 }
 
-console.log(isBandcamp, isPandora);
+function getGooglePlayer() {
+  return new Promise((resolve, reject) => {
+    resolve(document.getElementsByClassName('currently-playing-details')[0]);
+  });
+}
+
+// temp
+var googlePlayer;
+
+console.log(isBandcamp, isPandora, isGoogle);
 
 function isAuthenticated() {
   if (isAuth) {
@@ -151,6 +168,41 @@ function bandCampLoop() {
   });
 }
 
+function getGoogleAlbum() {
+  return new Promise((resolve, reject) => {
+    resolve(googlePlayer.getElementsByClassName('player-album')[0].innerHTML);
+  });
+}
+
+function getGoogleArtist() {
+  return new Promise((resolve, reject) => {
+    resolve(googlePlayer.getElementsByClassName('player-artist')[0].innerHTML);
+  });
+}
+
+function getGoogleSong() {
+  return new Promise((resolve, reject) => {
+    resolve(document.getElementById('currently-playing-title').innerHTML);
+  });
+}
+
+function googleLoop() {
+  getGooglePlayer().then((_player) => {
+    googlePlayer = _player;
+    console.log(googlePlayer);
+    getGoogleAlbum().then((_album) => {
+      getGoogleSong().then((_song) => {
+        getGoogleArtist().then((_artist) => {
+          if (lastSong != _song) {
+            lastSong = _song;
+            scrobble(_song, _artist, _album);
+          }
+        });
+      });
+    });
+  });
+}
+
 function main() {
   getAuth();
   setInterval(() => {
@@ -159,6 +211,9 @@ function main() {
     }
     if (isBandcamp) {
       bandCampLoop();
+    }
+    if (isGoogle) {
+      googleLoop();
     }
   }, 10000);
 }
