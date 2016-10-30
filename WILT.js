@@ -6,7 +6,11 @@
  * simply by writing poor code.
  * If you ain't first, you're Last(.fm).
  *
- * Also this only works on Pandora right now, sorry.
+ * Supports:
+ *  Pandora
+ *  GooglePlay
+ *  Bandcamp
+ *  YouTube(soontm)
  *
  * DISCLAIMER:....
  *  This code is awful - Vanilla JS disgusts me. I'll refactor it
