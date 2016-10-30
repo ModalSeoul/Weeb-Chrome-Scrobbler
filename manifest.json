@@ -10,7 +10,8 @@
       "matches": [
         "*://*.pandora.com/*",
         "*://*.bandcamp.com/*",
-        "*://play.google.com/*"
+        "*://*.play.google.com/*",
+        "*://*.youtube.com/*"
       ]
     }],
   "background": {

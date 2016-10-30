@@ -8,15 +8,18 @@
  *
  * Also this only works on Pandora right now, sorry.
  *
- * DISCLAIMER:
+ * DISCLAIMER:....
  *  This code is awful - Vanilla JS disgusts me. I'll refactor it
  *  upon releasing the alpha site.
  */
 
-var USER = 'Modal';
-var PASS = 'alpha';
-var ENV = 'live';
-var API;
+/////////////////////////////////////////
+// Credentials / extension util
+/////////////////////////////////////////
+let USER = 'Modal';
+let PASS = 'your_password';
+let ENV = 'live';
+let API;
 
 switch (ENV) {
   case 'dev':
@@ -26,13 +29,14 @@ switch (ENV) {
   API = 'https://modal.moe/api/';
 }
 
-var isPandora;
-var isBandcamp;
-var isGoogle;
+let isPandora;
+let isBandcamp;
+let isGoogle;
+let isYouTube;
 
-var lastSong;
-var isAuth = false;
-var Auth = {
+let lastSong;
+let isAuth = false;
+let Auth = {
     'token': '',
     'drfHeader': ''
 };
@@ -49,23 +53,29 @@ if (window.location.href.indexOf('play.google') > -1) {
   isGoogle = false;
 }
 
+if (window.location.href.indexOf('watch?v=') > -1) {
+  isYouTube = true;
+} else {
+  isYouTube = false;
+}
+
 if (window.location.href.indexOf('bandcamp') > -1) {
   isBandcamp = true;
 } else {
   isBandcamp = false;
 }
 
-function getGooglePlayer() {
-  return new Promise((resolve, reject) => {
-    resolve(document.getElementsByClassName('currently-playing-details')[0]);
-  });
-}
+console.log(`
+  YouTube: ${isYouTube}\n
+  Pandora: ${isPandora}\n
+  GooglePlay: ${isGoogle}\n
+  BandCamp: ${isBandcamp}\n
+`);
 
-// temp
-var googlePlayer;
 
-console.log(isBandcamp, isPandora, isGoogle);
-
+/////////////////////////////////////////
+// What I Listen To
+/////////////////////////////////////////
 function isAuthenticated() {
   if (isAuth) {
     return true;
@@ -88,28 +98,6 @@ function getAuth() {
 
 }
 
-function getSong() {
-  return new Promise((resolve, reject) => {
-    var song = document.getElementsByClassName('songTitle')[0].innerHTML;
-    resolve(song);
-  });
-}
-
-function getAlbum() {
-  return new Promise((resolve, reject) => {
-    var album = document.getElementsByClassName('albumTitle')[0].innerText;
-    resolve(album);
-  });
-}
-
-function getArtist() {
-  return new Promise((resolve, reject) => {
-    var artist = document.getElementsByClassName('artistSummary')[0].innerHTML;
-    resolve(artist);
-  });
-}
-
-
 function scrobble(song, artist, album) {
   chrome.runtime.sendMessage({
       method: 'POST',
@@ -119,6 +107,93 @@ function scrobble(song, artist, album) {
       drf: Auth.drfHeader
   }, function(responseText) {
       console.log(`Scrobbled ${song} by ${artist} on the album ${album}`);
+  });
+}
+
+
+/////////////////////////////////////////
+// YouTube
+/////////////////////////////////////////
+let tag;
+
+function getContentTag() {
+  return new Promise((resolve, reject) => {
+    let content = document.getElementsByClassName('watch-info-tag-list')[0];
+    resolve(content.getElementsByTagName('a')[0].innerHTML);
+  });
+}
+
+getContentTag().then(r => tag = r);
+
+
+/////////////////////////////////////////
+// Google Play
+/////////////////////////////////////////
+function getGooglePlayer() {
+  return new Promise((resolve, reject) => {
+    resolve(document.getElementsByClassName('currently-playing-details')[0]);
+  });
+}
+
+// temp
+let googlePlayer;
+
+function getGoogleAlbum() {
+  return new Promise((resolve, reject) => {
+    resolve(googlePlayer.getElementsByClassName('player-album')[0].innerHTML);
+  });
+}
+
+function getGoogleArtist() {
+  return new Promise((resolve, reject) => {
+    resolve(googlePlayer.getElementsByClassName('player-artist')[0].innerHTML);
+  });
+}
+
+function getGoogleSong() {
+  return new Promise((resolve, reject) => {
+    resolve(document.getElementById('currently-playing-title').innerHTML);
+  });
+}
+
+function googleLoop() {
+  getGooglePlayer().then((_player) => {
+    googlePlayer = _player;
+    getGoogleAlbum().then((_album) => {
+      getGoogleSong().then((_song) => {
+        getGoogleArtist().then((_artist) => {
+          if (lastSong != _song) {
+            lastSong = _song;
+            scrobble(_song, _artist, _album);
+          }
+        });
+      });
+    });
+  });
+}
+
+
+/////////////////////////////////////////
+// Pandora
+/////////////////////////////////////////
+function getSong() {
+  return new Promise((resolve, reject) => {
+    let song = document.getElementsByClassName('songTitle')[0].innerHTML;
+    resolve(song);
+  });
+}
+
+function getAlbum() {
+  return new Promise((resolve, reject) => {
+    let album = document.getElementsByClassName('albumTitle')[0].innerText;
+    resolve(album);
+  });
+}
+
+function getArtist() {
+  return new Promise((resolve, reject) => {
+    let artist = document.getElementsByClassName('artistSummary')[0].innerHTML;
+    resolve(artist);
   });
 }
 
@@ -135,9 +210,13 @@ function pandoraLoop() {
   });
 }
 
+
+/////////////////////////////////////////
+// Bandcamp
+/////////////////////////////////////////
 function getBandCampAlbum() {
   return new Promise((resolve, reject) => {
-    var album = document.getElementsByClassName('trackTitle')[0].innerHTML;
+    let album = document.getElementsByClassName('trackTitle')[0].innerHTML;
     resolve(album.trim());
   });
 }
@@ -168,41 +247,10 @@ function bandCampLoop() {
   });
 }
 
-function getGoogleAlbum() {
-  return new Promise((resolve, reject) => {
-    resolve(googlePlayer.getElementsByClassName('player-album')[0].innerHTML);
-  });
-}
 
-function getGoogleArtist() {
-  return new Promise((resolve, reject) => {
-    resolve(googlePlayer.getElementsByClassName('player-artist')[0].innerHTML);
-  });
-}
-
-function getGoogleSong() {
-  return new Promise((resolve, reject) => {
-    resolve(document.getElementById('currently-playing-title').innerHTML);
-  });
-}
-
-function googleLoop() {
-  getGooglePlayer().then((_player) => {
-    googlePlayer = _player;
-    console.log(googlePlayer);
-    getGoogleAlbum().then((_album) => {
-      getGoogleSong().then((_song) => {
-        getGoogleArtist().then((_artist) => {
-          if (lastSong != _song) {
-            lastSong = _song;
-            scrobble(_song, _artist, _album);
-          }
-        });
-      });
-    });
-  });
-}
-
+/////////////////////////////////////////
+// Main function (loop)
+/////////////////////////////////////////
 function main() {
   getAuth();
   setInterval(() => {
