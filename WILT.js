@@ -267,7 +267,7 @@ function main() {
     if (isGoogle) {
       googleLoop();
     }
-  }, 10000);
+  }, 15000);
 }
 
 main();
