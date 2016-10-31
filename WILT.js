@@ -11,6 +11,7 @@
  *  GooglePlay
  *  Bandcamp
  *  YouTube(soontm)
+ *  PleX Web Player
  *
  * DISCLAIMER:....
  *  This code is awful - Vanilla JS disgusts me. I'll refactor it
@@ -23,6 +24,7 @@
 let USER = 'Modal';
 let PASS = 'your_password';
 let ENV = 'live';
+let PLEXURL = 'your_plex_ip_or_url_here';
 let API;
 
 switch (ENV) {
@@ -30,13 +32,14 @@ switch (ENV) {
   API = 'http://localhost:8000/api/';
   break;
   case 'live':
-  API = 'https://modal.moe/api/';
+  API = 'https://wilt.fm/api/';
 }
 
 let isPandora;
 let isBandcamp;
 let isGoogle;
 let isYouTube;
+let isPlex;
 
 let lastSong;
 let isAuth = false;
@@ -67,6 +70,12 @@ if (window.location.href.indexOf('bandcamp') > -1) {
   isBandcamp = true;
 } else {
   isBandcamp = false;
+}
+
+if (window.location.href.indexOf(PLEXURL) > -1) {
+  isPlex = true;
+} else {
+  isPlex = false;
 }
 
 console.log(`
@@ -253,6 +262,41 @@ function bandCampLoop() {
 
 
 /////////////////////////////////////////
+// PleX (Web player)
+/////////////////////////////////////////
+function getPlexArtist() {
+  return new Promise((resolve, reject) => {
+    let player = document.getElementsByClassName('grandparent-title-container')[0];
+    resolve(player.getElementsByTagName('button')[0].innerHTML);
+  });
+}
+
+function getPlexSong() {
+  return new Promise((resolve, reject) => {
+    resolve(document.getElementsByClassName('item-title btn-link')[0].innerHTML);
+  });
+}
+
+function getPlexAlbum() {
+  return new Promise((resolve, reject) => {
+    resolve(document.getElementsByClassName('album-title')[0].innerHTML);
+  });
+}
+
+function plexLoop() {
+  getPlexArtist().then(_artist => {
+    getPlexSong().then(_song => {
+      getPlexAlbum().then(_album => {
+        if (lastSong != _song) {
+          lastSong = _song;
+          scrobble(_song, _artist, _album);
+        }
+      });
+    });
+  });
+}
+
+/////////////////////////////////////////
 // Main function (loop)
 /////////////////////////////////////////
 function main() {
@@ -267,7 +311,17 @@ function main() {
     if (isGoogle) {
       googleLoop();
     }
+    if (isPlex) {
+      plexLoop();
+    }
   }, 15000);
 }
 
-main();
+/* wait 10 seconds before starting loop.
+ this is for single paged web apps that
+ take time loading dom elements after
+ the navigation has already technically
+ ended. */
+setTimeout(() => {
+  main();
+}, 10000);

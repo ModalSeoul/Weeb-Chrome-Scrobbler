@@ -7,11 +7,13 @@
   "content_scripts": [
     {
       "js": ["WILT.js"],
+      "run_at": "document_end",
       "matches": [
         "*://*.pandora.com/*",
         "*://*.bandcamp.com/*",
         "*://*.play.google.com/*",
-        "*://*.youtube.com/*"
+        "*://*.youtube.com/*",
+        "*://*.your_plex_ip_here*"
       ]
     }],
   "background": {
