@@ -1,0 +1,48 @@
+<html>
+<head>
+  <style>
+  .wrapper {
+    margin: 0;
+    padding: 1rem;
+  }
+  body {
+    background-color: #323232;
+    color: #ccc;
+    font-family: Verdana;
+    font-size: 13px;
+    width: 14rem;
+    height: 18rem;
+  }
+  .input-wrapper {
+    margin-top: 1rem;
+  }
+  .wilt-text {
+    margin-bottom: 1rem;
+    display: block;
+    padding: .1rem;
+    border-radius: 3px;
+    border: 1px solid #191919;
+    background-color: #282828;
+    color: #ccc;
+  }
+  .wilt-button {
+    display: block;
+    border-radius: 3px;
+    border: none;
+    background-color: #008CBC;
+    color: #FFF;
+    padding: .3rem;
+  }
+  </style>
+</head>
+<body>
+  <div class="wrapper">
+    Sign into What I Listen To
+    <div class="input-wrapper">
+      <input id="uname" type="text" class="wilt-text" placeholder="Username">
+      <input id="passwd" type="password" class="wilt-text" placeholder="Password">
+      <input id="login" type="button" class="wilt-button" value="Login" onclick="getAuth()">
+    </div>
+  </div>
+</body>
+</html>

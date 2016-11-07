@@ -11,7 +11,6 @@
  *  GooglePlay
  *  Bandcamp
  *  YouTube(soontm)
- *  PleX Web Player
  *
  * DISCLAIMER:....
  *  This code is awful - Vanilla JS disgusts me. I'll refactor it
@@ -22,9 +21,9 @@
 // Credentials / extension util
 /////////////////////////////////////////
 let USER = 'Modal';
-let PASS = 'your_password';
+let PASS = '123';
 let ENV = 'live';
-let PLEXURL = 'your_plex_ip_or_url_here';
+let PLEXURL = 'plex_ip';
 let API;
 
 switch (ENV) {
@@ -40,6 +39,7 @@ let isBandcamp;
 let isGoogle;
 let isYouTube;
 let isPlex;
+let isSpotify;
 
 let lastSong;
 let isAuth = false;
@@ -78,13 +78,20 @@ if (window.location.href.indexOf(PLEXURL) > -1) {
   isPlex = false;
 }
 
+if (window.location.href.indexOf('play.spotify') > -1) {
+  isSpotify = true;
+} else {
+  isSpotify = false;
+}
+
 console.log(`
   YouTube: ${isYouTube}\n
   Pandora: ${isPandora}\n
   GooglePlay: ${isGoogle}\n
   BandCamp: ${isBandcamp}\n
+  PleX: ${isPlex}\n
+  Spotify: ${isSpotify}\n
 `);
-
 
 /////////////////////////////////////////
 // What I Listen To
@@ -97,12 +104,18 @@ function isAuthenticated() {
   }
 }
 
+function getUserInfo() {
+  // let USER = document.getElementById('uname').value;
+  // let PASS = document.getElementById('passwd').value;
+  return `username=${USER}&password=${PASS}`;
+}
+
 function getAuth() {
   chrome.runtime.sendMessage({
       method: 'POST',
       action: 'xhttp',
       url: `${API}api-token-auth/`,
-      data: `username=${USER}&password=${PASS}`,
+      data: getUserInfo(),
       drf: 'null'
   },function(responseText) {
       Auth.token = JSON.parse(responseText).token;
@@ -279,7 +292,8 @@ function getPlexSong() {
 
 function getPlexAlbum() {
   return new Promise((resolve, reject) => {
-    resolve(document.getElementsByClassName('album-title')[0].innerHTML);
+    resolve(document.getElementsByClassName(
+      'media-poster loaded')[1].getAttribute('data-parent-title'));
   });
 }
 
@@ -295,6 +309,43 @@ function plexLoop() {
     });
   });
 }
+
+
+/////////////////////////////////////////
+// Spotify
+////////////////////////////////////////
+let spotifyPlayer;
+
+if (isSpotify) {
+  spotifyPlayer = document.getElementById('player');
+}
+
+function getSpotifyTrack() {
+  return new Promise((resolve, reject) => {
+    let trackWrapper = spotifyPlayer.getElementsByTagName('div')[0]
+    resolve(trackWrapper.getElementsByTagName('a')[0]);
+  });
+}
+
+function getSpotifyArtist() {
+  return new Promise((resolve, reject) => {
+    let artistWrapper = spotifyPlayer.getElementsByTagName('div')[1];
+    console.log(artistWrapper)
+    resolve(artistWrapper.getElementsByTagName('a')[0]);
+  })
+}
+
+function spotifyLoop() {
+  getSpotifyTrack().then(_song => {
+    getSpotifyArtist().then(_artist => {
+      if (lastSong != _song) {
+        lastSong = _song;
+        scrobble(_song, _artist);
+      }
+    });
+  });
+}
+
 
 /////////////////////////////////////////
 // Main function (loop)
@@ -314,7 +365,10 @@ function main() {
     if (isPlex) {
       plexLoop();
     }
-  }, 15000);
+    if (isSpotify) {
+      spotifyLoop();
+    }
+  }, 5000);
 }
 
 /* wait 10 seconds before starting loop.
@@ -324,4 +378,4 @@ function main() {
  ended. */
 setTimeout(() => {
   main();
-}, 10000);
+}, 100);
