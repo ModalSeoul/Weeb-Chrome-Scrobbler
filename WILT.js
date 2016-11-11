@@ -21,7 +21,7 @@
 // Credentials / extension util
 /////////////////////////////////////////
 let USER = 'Modal';
-let PASS = '123';
+let PASS = '123_your_pass0';
 let ENV = 'live';
 let PLEXURL = 'plex_ip';
 let API;
@@ -378,4 +378,4 @@ function main() {
  ended. */
 setTimeout(() => {
   main();
-}, 100);
+}, 10000);
