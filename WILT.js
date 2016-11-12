@@ -21,7 +21,7 @@
 // Credentials / extension util
 /////////////////////////////////////////
 let USER = 'Modal';
-let PASS = 'fuckyou420';
+let PASS = 'your_password';
 let ENV = 'live';
 let PLEXURL = 'plex_ip';
 let API;
@@ -120,20 +120,25 @@ function getAuth() {
   },function(responseText) {
       Auth.token = JSON.parse(responseText).token;
       Auth.drfHeader = `Token ${Auth.token}`;
+      alert(Auth.drfHeader);
   });
 
 }
 
 function scrobble(song, artist, album) {
-  chrome.runtime.sendMessage({
-      method: 'POST',
-      action: 'xhttp',
-      url: `${API}scrobbles/`,
-      data: `song=${song}&artist=${artist}&album=${album}`,
-      drf: Auth.drfHeader
-  }, function(responseText) {
-      console.log(`Scrobbled ${song} by ${artist} on the album ${album}`);
-  });
+  if (!song.length || !artist.length) {
+    console.log('Prevented empty scrobble.');
+  } else {
+    chrome.runtime.sendMessage({
+        method: 'POST',
+        action: 'xhttp',
+        url: `${API}scrobbles/`,
+        data: `song=${song}&artist=${artist}&album=${album}`,
+        drf: Auth.drfHeader
+    }, function(responseText) {
+        console.log(`Scrobbled ${song} by ${artist} on the album ${album}`);
+    });
+  }
 }
 
 
