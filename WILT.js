@@ -21,7 +21,7 @@
 // Credentials / extension util
 /////////////////////////////////////////
 let USER = 'Modal';
-let PASS = '123_your_pass0';
+let PASS = 'fuckyou420';
 let ENV = 'live';
 let PLEXURL = 'plex_ip';
 let API;
@@ -320,29 +320,21 @@ if (isSpotify) {
   spotifyPlayer = document.getElementById('player');
 }
 
-function getSpotifyTrack() {
+function getSpotify() {
   return new Promise((resolve, reject) => {
-    let trackWrapper = spotifyPlayer.getElementsByTagName('div')[0]
-    resolve(trackWrapper.getElementsByTagName('a')[0]);
+    let title = document.getElementsByTagName('title')[0].innerHTML;
+    title = title.split(' - ');
+    title[0] = title[0].split('▶ ')[1];
+    resolve(title);
   });
 }
 
-function getSpotifyArtist() {
-  return new Promise((resolve, reject) => {
-    let artistWrapper = spotifyPlayer.getElementsByTagName('div')[1];
-    console.log(artistWrapper)
-    resolve(artistWrapper.getElementsByTagName('a')[0]);
-  })
-}
-
 function spotifyLoop() {
-  getSpotifyTrack().then(_song => {
-    getSpotifyArtist().then(_artist => {
-      if (lastSong != _song) {
-        lastSong = _song;
-        scrobble(_song, _artist);
-      }
-    });
+  getSpotify().then(_track => {
+    if (lastSong != _track[0]) {
+      lastSong = _track[0];
+      scrobble(_track[0], _track[1]);
+    }
   });
 }
 
