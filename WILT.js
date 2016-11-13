@@ -120,7 +120,6 @@ function getAuth() {
   },function(responseText) {
       Auth.token = JSON.parse(responseText).token;
       Auth.drfHeader = `Token ${Auth.token}`;
-      alert(Auth.drfHeader);
   });
 
 }
