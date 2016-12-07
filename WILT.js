@@ -1,20 +1,13 @@
 /*
- * Welcome to the wonderful world of vanilla
- * Javascript. Where the dom is our bitch and
- * performance is not something we care about
- * We're 10xers, remember? We change the world
- * simply by writing poor code.
  * If you ain't first, you're Last(.fm).
  *
  * Supports:
  *  Pandora
  *  GooglePlay
  *  Bandcamp
+ *  Spotify
  *  YouTube(soontm)
  *
- * DISCLAIMER:....
- *  This code is awful - Vanilla JS disgusts me. I'll refactor it
- *  upon releasing the alpha site.
  */
 
 /////////////////////////////////////////
