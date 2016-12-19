@@ -19,7 +19,8 @@
         "*://*.play.google.com/*",
         "*://*.youtube.com/*",
         "*://*.plex_ip/*",
-        "*://*.play.spotify.com/*"
+        "*://*.play.spotify.com/*",
+        "*://*.mutantradio.org/*"
       ]
     }],
   "background": {

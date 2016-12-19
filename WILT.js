@@ -14,7 +14,7 @@
 // Credentials / extension util
 /////////////////////////////////////////
 let USER = 'Modal';
-let PASS = 'your_password';
+let PASS = 'your_pass';
 let ENV = 'live';
 let PLEXURL = 'plex_ip';
 let API;
@@ -33,6 +33,7 @@ let isGoogle;
 let isYouTube;
 let isPlex;
 let isSpotify;
+let isMutant;
 
 let lastSong;
 let isAuth = false;
@@ -45,6 +46,12 @@ if (window.location.href.indexOf('pandora') > -1) {
   isPandora = true;
 } else {
   isPandora = false;
+}
+
+if (window.location.href.indexOf('mutantradio') > -1) {
+  isMutant = true;
+} else {
+  isMutant = false;
 }
 
 if (window.location.href.indexOf('play.google') > -1) {
@@ -84,6 +91,7 @@ console.log(`
   BandCamp: ${isBandcamp}\n
   PleX: ${isPlex}\n
   Spotify: ${isSpotify}\n
+  MutantRadio: ${isMutant}\n
 `);
 
 /////////////////////////////////////////
@@ -146,8 +154,30 @@ function getContentTag() {
   });
 }
 
-getContentTag().then(r => tag = r);
+// getContentTag().then(r => tag = r);
 
+/////////////////////////////////////////
+// Mutant Radio (Whoever wrote this site fucking sucks)
+/////////////////////////////////////////
+function mutantRadio() {
+  return new Promise((resolve, reject) => {
+    let jumbo = document.getElementsByClassName('jumbotron container')[0];
+    let track = jumbo.getElementsByTagName('p')[0].innerHTML;
+    resolve({
+      'song': track.split('<br>')[1],
+      'artist': track.split('<b>')[1].split('</b>')[0]
+    });
+  });
+}
+
+function mutantLoop() {
+  mutantRadio().then((track) => {
+    if (lastSong != track.song) {
+      lastSong = track.song;
+      scrobble(track.song, track.artist);
+    }
+  });
+}
 
 /////////////////////////////////////////
 // Google Play
@@ -311,26 +341,28 @@ function plexLoop() {
 /////////////////////////////////////////
 // Spotify
 ////////////////////////////////////////
-let spotifyPlayer;
-
-if (isSpotify) {
-  spotifyPlayer = document.getElementById('player');
+function getPlayer() {
+  return new Promise((resolve, reject) => {
+    resolve(document.getElementById('player'));
+  });
 }
 
 function getSpotify() {
   return new Promise((resolve, reject) => {
-    let title = document.getElementsByTagName('title')[0].innerHTML;
-    title = title.split(' - ');
-    title[0] = title[0].split('▶ ')[1];
-    resolve(title);
+    getPlayer().then(player => {
+      console.log(player);
+      let song = player.getElementsByTagName('h3')[0].textContent;
+      let artist = document.getElementById('track-artist').textContent;
+      resolve({song, artist});
+    });
   });
 }
 
 function spotifyLoop() {
-  getSpotify().then(_track => {
-    if (lastSong != _track[0]) {
-      lastSong = _track[0];
-      scrobble(_track[0], _track[1]);
+  getSpotify().then(track => {
+    if (lastSong != track.song) {
+      lastSong = track.song;
+      scrobble(track.song, track.artist);
     }
   });
 }
@@ -357,6 +389,11 @@ function main() {
     if (isSpotify) {
       spotifyLoop();
     }
+    if (isMutant) {
+      mutantLoop();
+    } else {
+      console.log(isMutant);
+    }
   }, 5000);
 }
 
@@ -365,6 +402,4 @@ function main() {
  take time loading dom elements after
  the navigation has already technically
  ended. */
-setTimeout(() => {
-  main();
-}, 10000);
+main();
