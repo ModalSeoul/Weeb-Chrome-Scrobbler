@@ -13,11 +13,14 @@
 /////////////////////////////////////////
 // Credentials / extension util
 /////////////////////////////////////////
-let USER = 'Modal';
-let PASS = 'your_pass';
 let ENV = 'live';
 let PLEXURL = 'plex_ip';
 let API;
+let drfHeader;
+
+chrome.storage.sync.get(['drfHeader'], (items) => {
+  drfHeader = items.drfHeader;
+});
 
 switch (ENV) {
   case 'dev':
@@ -34,13 +37,8 @@ let isYouTube;
 let isPlex;
 let isSpotify;
 let isMutant;
-
 let lastSong;
 let isAuth = false;
-let Auth = {
-    'token': '',
-    'drfHeader': ''
-};
 
 if (window.location.href.indexOf('pandora') > -1) {
   isPandora = true;
@@ -105,26 +103,6 @@ function isAuthenticated() {
   }
 }
 
-function getUserInfo() {
-  // let USER = document.getElementById('uname').value;
-  // let PASS = document.getElementById('passwd').value;
-  return `username=${USER}&password=${PASS}`;
-}
-
-function getAuth() {
-  chrome.runtime.sendMessage({
-      method: 'POST',
-      action: 'xhttp',
-      url: `${API}api-token-auth/`,
-      data: getUserInfo(),
-      drf: 'null'
-  },function(responseText) {
-      Auth.token = JSON.parse(responseText).token;
-      Auth.drfHeader = `Token ${Auth.token}`;
-  });
-
-}
-
 function scrobble(song, artist, album) {
   if (!song.length || !artist.length) {
     console.log('Prevented empty scrobble.');
@@ -134,13 +112,12 @@ function scrobble(song, artist, album) {
         action: 'xhttp',
         url: `${API}scrobbles/`,
         data: `song=${song}&artist=${artist}&album=${album}`,
-        drf: Auth.drfHeader
+        drf: drfHeader
     }, function(responseText) {
         console.log(`Scrobbled ${song} by ${artist} on the album ${album}`);
     });
   }
 }
-
 
 /////////////////////////////////////////
 // YouTube
@@ -231,21 +208,21 @@ function googleLoop() {
 /////////////////////////////////////////
 function getSong() {
   return new Promise((resolve, reject) => {
-    let song = document.getElementsByClassName('songTitle')[0].innerHTML;
+    let song = document.getElementsByClassName('Marquee__wrapper__content')[0].innerHTML;
     resolve(song);
   });
 }
 
 function getAlbum() {
   return new Promise((resolve, reject) => {
-    let album = document.getElementsByClassName('albumTitle')[0].innerText;
+    let album = document.getElementsByClassName('nowPlayingTopInfo__current__artistName nowPlayingTopInfo__current__link')[0].innerText;
     resolve(album);
   });
 }
 
 function getArtist() {
   return new Promise((resolve, reject) => {
-    let artist = document.getElementsByClassName('artistSummary')[0].innerHTML;
+    let artist = document.getElementsByClassName('nowPlayingTopInfo__current__albumName nowPlayingTopInfo__current__link')[0].innerHTML;
     resolve(artist);
   });
 }
@@ -372,7 +349,6 @@ function spotifyLoop() {
 // Main function (loop)
 /////////////////////////////////////////
 function main() {
-  getAuth();
   setInterval(() => {
     if (isPandora) {
       pandoraLoop();
@@ -391,8 +367,6 @@ function main() {
     }
     if (isMutant) {
       mutantLoop();
-    } else {
-      console.log(isMutant);
     }
   }, 5000);
 }

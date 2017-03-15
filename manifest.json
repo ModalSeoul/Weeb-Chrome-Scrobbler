@@ -1,30 +1,23 @@
 {
-  "manifest_version": 2,
-
-  "name": "Scrobbleman2000",
-  "description": "Scrobbles music to What I Listen To",
-  "version": "1.1",
-  "browser_action": {
-    "default_icon": "headphones.png",
-    "default_popup": "popup.html",
-    "default_title": "Sign in"
-  },
-  "content_scripts": [
-    {
-      "js": ["WILT.js"],
-      "run_at": "document_end",
-      "matches": [
-        "*://*.pandora.com/*",
-        "*://*.bandcamp.com/*",
-        "*://*.play.google.com/*",
-        "*://*.youtube.com/*",
-        "*://*.plex_ip/*",
-        "*://*.play.spotify.com/*",
-        "*://*.mutantradio.org/*"
-      ]
-    }],
-  "background": {
-    "scripts": ["background.js"],
-    "persistent": false
-  }
+   "background": {
+      "persistent": false,
+      "scripts": [ "background.js" ]
+   },
+   "browser_action": {
+      "default_icon": "headphones.png",
+      "default_popup": "popup.html",
+      "default_title": "Sign in"
+   },
+   "content_scripts": [ {
+      "js": [ "WILT.js" ],
+      "matches": [ "*://*.pandora.com/*", "*://*.bandcamp.com/*", "*://*.play.google.com/*", "*://*.youtube.com/*", "*://*.plex_ip/*", "*://*.play.spotify.com/*", "*://*.mutantradio.org/*" ],
+      "run_at": "document_end"
+   } ],
+   "description": "Scrobbles music to What I Listen To",
+   "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAom74m/TUl8CfHOMRXQ4BoP7l3PG4XL4KGaB1oJmaQBUotU8kAF/s+w6pX3gMzkmWgKFMgHFmTbAsTDTzWq8IupYJ/m+6L+O+/Y+Bx+i5HRzZ+Z9Wme6lpI+2+oRlBOW0/Q+rpeEwmwJVHWeQbYREkN/ShB5dR2YAoCX17vXo5lKIo3szbYg79Q1ABItgTn2wtB06dXD0VykT0I72p/EhosXVIqszE7HL29GbGmml9x/XAAqURMMDhepAVu8tQc95TUlRDUUiZyEEckIz8inH5Yiy/4cvbdGxYgGpkdnleW1Nz8D7yYGRgM5ySG3JAKKY9wp+Juctr/GwKvvA4qI6dwIDAQAB",
+   "manifest_version": 2,
+   "name": "Wilt Scrobbler",
+   "permissions": [ "storage" ],
+   "update_url": "https://clients2.google.com/service/update2/crx",
+   "version": "1.2"
 }
