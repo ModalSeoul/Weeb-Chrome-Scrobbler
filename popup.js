@@ -22,7 +22,16 @@ function getAuth() {
           data: `username=${inputId}&password=${inputPw}`,
           drf: 'null'
       }, function(responseText) {
-          chrome.storage.sync.set({ 'drfHeader': `Token ${JSON.parse(responseText).token}` });
+          if (/non_field/.test(responseText)) {
+            alert('Fuck, try again. Wrong info\nPress enter');
+          } else {
+            chrome.storage.sync.set({ 'drfHeader': `Token ${JSON.parse(responseText).token}` });
+            if (/lenai/.test(inputId.toLowerCase())) {
+              alert('is that Toxic Mami? LOGGED THAT FIIIINE ASS IN\nPress enter');
+            } else {
+              alert('Logged in. Press enter.')
+            }  
+          }
       });
     });
   });

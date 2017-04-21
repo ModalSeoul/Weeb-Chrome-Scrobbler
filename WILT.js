@@ -76,7 +76,7 @@ if (window.location.href.indexOf(PLEXURL) > -1) {
   isPlex = false;
 }
 
-if (window.location.href.indexOf('play.spotify') > -1) {
+if (window.location.href.indexOf('open.spotify') > -1) {
   isSpotify = true;
 } else {
   isSpotify = false;
@@ -318,20 +318,12 @@ function plexLoop() {
 /////////////////////////////////////////
 // Spotify
 ////////////////////////////////////////
-function getPlayer() {
-  return new Promise((resolve, reject) => {
-    resolve(document.getElementById('player'));
-  });
-}
 
 function getSpotify() {
   return new Promise((resolve, reject) => {
-    getPlayer().then(player => {
-      console.log(player);
-      let song = player.getElementsByTagName('h3')[0].textContent;
-      let artist = document.getElementById('track-artist').textContent;
-      resolve({song, artist});
-    });
+    let song = document.getElementsByClassName('navlist-itemlink active')[0].title;
+    let artist = document.getElementsByClassName('track-info__artists')[0].textContent;
+    resolve({song, artist});
   });
 }
 

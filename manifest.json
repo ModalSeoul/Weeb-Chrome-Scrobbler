@@ -10,7 +10,12 @@
    },
    "content_scripts": [ {
       "js": [ "WILT.js" ],
-      "matches": [ "*://*.pandora.com/*", "*://*.bandcamp.com/*", "*://*.play.google.com/*", "*://*.youtube.com/*", "*://*.plex_ip/*", "*://*.play.spotify.com/*", "*://*.mutantradio.org/*" ],
+      "matches": [ "*://*.pandora.com/*",
+                  "*://*.bandcamp.com/*",
+                  "*://*.play.google.com/*",
+                  "*://*.youtube.com/*",
+                  "*://*.spotify.com/*",
+                  "*://*.mutantradio.org/*" ],
       "run_at": "document_end"
    } ],
    "description": "Scrobbles music to What I Listen To",
@@ -19,5 +24,5 @@
    "name": "Wilt Scrobbler",
    "permissions": [ "storage" ],
    "update_url": "https://clients2.google.com/service/update2/crx",
-   "version": "1.2"
+   "version": "1.3"
 }
