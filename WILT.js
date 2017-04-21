@@ -321,7 +321,7 @@ function plexLoop() {
 
 function getSpotify() {
   return new Promise((resolve, reject) => {
-    let song = document.getElementsByClassName('navlist-itemlink active')[0].title;
+    let song = document.getElementsByClassName('track-info__name')[0].textContent;
     let artist = document.getElementsByClassName('track-info__artists')[0].textContent;
     resolve({song, artist});
   });
