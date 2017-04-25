@@ -215,14 +215,14 @@ function getSong() {
 
 function getAlbum() {
   return new Promise((resolve, reject) => {
-    let album = document.getElementsByClassName('nowPlayingTopInfo__current__artistName nowPlayingTopInfo__current__link')[0].innerText;
+    let album = document.getElementsByClassName('nowPlayingTopInfo__current__albumName nowPlayingTopInfo__current__link')[0].innerText;
     resolve(album);
   });
 }
 
 function getArtist() {
   return new Promise((resolve, reject) => {
-    let artist = document.getElementsByClassName('nowPlayingTopInfo__current__albumName nowPlayingTopInfo__current__link')[0].innerHTML;
+    let artist = document.getElementsByClassName('nowPlayingTopInfo__current__artistName nowPlayingTopInfo__current__link')[0].innerHTML;
     resolve(artist);
   });
 }
