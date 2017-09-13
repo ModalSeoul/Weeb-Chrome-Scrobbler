@@ -165,7 +165,7 @@ function getGooglePlayer() {
   });
 }
 
-// temp
+// temp (lol jk)
 let googlePlayer;
 
 function getGoogleAlbum() {
@@ -206,23 +206,35 @@ function googleLoop() {
 /////////////////////////////////////////
 // Pandora
 /////////////////////////////////////////
+let ELEMENTS = {
+  'SONG': 'Marquee__wrapper__content',
+  'SONG_LONG': 'Marquee__wrapper__content__child',
+  'ALBUM': 'nowPlayingTopInfo__current__albumName nowPlayingTopInfo__current__link',
+  'ARTIST': 'nowPlayingTopInfo__current__artistName nowPlayingTopInfo__current__link'
+}
+
 function getSong() {
   return new Promise((resolve, reject) => {
-    let song = document.getElementsByClassName('Marquee__wrapper__content')[0].innerHTML;
+    let song;
+    try {
+      song = document.getElementsByClassName(ELEMENTS.SONG)[0].innerHTML;
+    } catch(err) {
+      song = document.getElementsByClassName(ELEMENTS.SONG_LONG)[0].innerHTML;
+    }
     resolve(song);
   });
 }
 
 function getAlbum() {
   return new Promise((resolve, reject) => {
-    let album = document.getElementsByClassName('nowPlayingTopInfo__current__albumName nowPlayingTopInfo__current__link')[0].innerText;
+    let album = document.getElementsByClassName(ELEMENTS.ALBUM)[0].innerText;
     resolve(album);
   });
 }
 
 function getArtist() {
   return new Promise((resolve, reject) => {
-    let artist = document.getElementsByClassName('nowPlayingTopInfo__current__artistName nowPlayingTopInfo__current__link')[0].innerHTML;
+    let artist = document.getElementsByClassName(ELEMENTS.ARTIST)[0].innerHTML;
     resolve(artist);
   });
 }
