@@ -26,11 +26,7 @@ function getAuth() {
             alert('Fuck, try again. Wrong info\nPress enter');
           } else {
             chrome.storage.sync.set({ 'drfHeader': `Token ${JSON.parse(responseText).token}` });
-            if (/lenai/.test(inputId.toLowerCase())) {
-              alert('is that Toxic Mami? LOGGED THAT FIIIINE ASS IN\nPress enter');
-            } else {
-              alert('Logged in. Press enter.')
-            }  
+            alert('Logged in. Key enter.');
           }
       });
     });
