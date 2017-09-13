@@ -5,3 +5,5 @@
 * Band Camp
 * YouTube (WIP)
 * PleX Web Player (Must specify your Plex URL in both manifest.json & WILT.js)
+* MUtant Radio
+* Spotify Web Player
